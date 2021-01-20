@@ -1,18 +1,25 @@
+from collections import OrderedDict
 import functools
 import time
 
 def cached(function):
 
-    cache = {}
+    cache = OrderedDict()
 
     @functools.wraps(function)
     def wrapper(*args):
 
+        if len(cache) > 10:
+            print('i deleted one item')
+            cache.popitem(last=False)
+
         signature = (function, *args)
 
         if signature in cache:
+            print('i returned result')
             result = cache[signature]
         else:
+            print('i added one result')
             result = function(*args)
             cache[signature] = result
 
