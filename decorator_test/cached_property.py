@@ -2,38 +2,45 @@ from collections import OrderedDict
 import functools
 import time
 
-def cached(function):
+def limit(par=10):
 
-    cache = OrderedDict()
+    limit = par
 
-    @functools.wraps(function)
-    def wrapper(*args):
+    def cached(function):
 
-        if len(cache) > 10:
-            print('i deleted one item')
-            cache.popitem(last=False)
+        cache = OrderedDict()
 
-        signature = (function, *args)
+        @functools.wraps(function)
+        def wrapper(*args):
 
-        if signature in cache:
-            print('i returned result')
-            result = cache[signature]
-        else:
-            print('i added one result')
-            result = function(*args)
-            cache[signature] = result
+            if len(cache) > limit:
+                print('i deleted one item')
+                cache.popitem(last=False)
 
-        return result
+            signature = (function, *args)
 
-    return wrapper
+            if signature in cache:
+                print('i returned result')
+                result = cache[signature]
+            else:
+                print('i added one result')
+                result = function(*args)
+                cache[signature] = result
 
-@cached
-def power(x,y):
+            return result
+
+        return wrapper
+
+    return cached
+
+@limit(1)
+def power(x, y):
 
     time.sleep(3)
     return x**y
 
-@cached
+@limit
 def added(a):
     time.sleep(3)
     return a+a
+
